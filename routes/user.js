@@ -105,11 +105,19 @@ router.post('/login',(req, res) => {
   const {email,password}  = req.body;
   //console.log({email,password});
   User.findOne({ email: email }).then(async (user) => {
-
-  if(await bcrypt.compare(password, user.password)){
+    //console.log(user);
+  if(user && await bcrypt.compare(password, user.password)){
     res.redirect('/users/dashboard');
-  }}).catch(err => console.log(err));
+  }
+else{
+  req.flash(
+    'error_msg',
+    'Not Registered Or Put Correct Credentials'
+  );
+  res.redirect('/users/login');
+}}).catch(err => console.log(err));
 });
+
 // Logout
 router.get('/logout', (req, res) => {
   req.logout();
