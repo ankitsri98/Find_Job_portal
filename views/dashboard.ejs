@@ -1,13 +1,11 @@
 
-  
-  
   <body>
     <h1 class="mt-4">User Dashboard</h1>
     <p class="lead mb-3">Welcome</p>
     <a href="/users/logout" class="btn btn-secondary">Logout</a>
     
   <div class="Jobs content">
-    <h2>All Jobs</h2>
+    <h2>Showing All Available Jobs</h2>
 
     <% if (jobs.length > 0) { %>
       <% jobs.forEach(Job => { %>
