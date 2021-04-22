@@ -7,17 +7,28 @@ const { forwardAuthenticated } = require('../config/auth');
 const recruit = require('../model/recruiter');
 //const { forwardAuthenticated } = require('../config/auth');
 const Apply = require('../model/applyjob');
+const Job = require('../model/jobpost');
 
 //LOGIN
 router.get('/login', forwardAuthenticated, (req,res)=>res.render('rlogin'));
 
-router.get('/dashboard', forwardAuthenticated, (req,res)=>{
-  Apply.find().then((results)=>{
-    //forecah results
+router.get('/dashboard', forwardAuthenticated,  (req,res)=>{
+  Apply.find().then( async (results)=>{
+    var arr=[];
+    results.forEach(result=>{
+      
+      Job.findById(result.applied).then(x=>{
+        //console.log("fffrf",x);
+        arr.push(x.company_name);
+        
+      })
+      console.log(arr);
+    });
+    
     // result.applied
     // jobs.findone(for result.applied)
     // job.companyname
-    res.render('rdashboard',{apply: results,companynames:["c1","c2","c3","c4","c5","c6"]});
+    res.render('rdashboard',{apply: results,companynames:arr});
   })
   .catch((err)=>{
     console.log(err);
@@ -104,8 +115,15 @@ router.post('/login',(req, res) => {
   //console.log({email,password});
   recruit.findOne({ email: email }).then(async (user) => {
 
-  if(await bcrypt.compare(password, user.password)){
+  if(user && await bcrypt.compare(password, user.password)){
     res.redirect('/recruiter/dashboard');
+  }
+  else{
+    req.flash(
+      'error_msg',
+      'Not Registered Or Put Correct Credentials'
+    );
+    res.redirect('/recruiter/login');
   }}).catch(err => console.log(err));
 });
 // Logout
